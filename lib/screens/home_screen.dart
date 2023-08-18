@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:task_management/screens/all_tasks_screen.dart';
+import 'package:task_management/controllers/data_controller.dart';
 import 'package:task_management/utils/app_colors.dart';
+import 'package:task_management/utils/routes.dart';
 import 'package:task_management/widgets/button_widget.dart';
 import 'package:get/get.dart';
-
-import 'add_task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
+    // var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -51,9 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             InkWell(
               onTap: () {
-                Get.to(() => const AddTaskScreen(),
-                    transition: Transition.zoom,
-                    duration: const Duration(milliseconds: 500));
+                Get.lazyPut(() => DataController());
+                Get.toNamed(RoutesClass.getAddTasksScreen());
               },
               child: ButtonWidget(
                   backgroundColor: AppColors.mainColor,
@@ -65,9 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             InkWell(
               onTap: () {
-                Get.to(() => const AllTasksScreen(),
-                    transition: Transition.fade,
-                    duration: const Duration(seconds: 1));
+                Get.lazyPut(() => DataController());
+                Get.toNamed(RoutesClass.getAllTaskScreenRoute());
               },
               child: ButtonWidget(
                   backgroundColor: Colors.white,

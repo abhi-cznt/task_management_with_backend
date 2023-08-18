@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_management/controllers/data_controller.dart';
+import 'package:task_management/screens/all_tasks_screen.dart';
 import 'package:task_management/utils/app_colors.dart';
-import 'package:task_management/utils/routes.dart';
 import 'package:task_management/widgets/button_widget.dart';
 import 'package:task_management/widgets/error_warning_ms.dart';
 import 'package:task_management/widgets/textfield_widget.dart';
 
-class AddTaskScreen extends StatelessWidget {
-  const AddTaskScreen({super.key});
-
-
+class EditTaskScreen extends StatelessWidget {
+  final int id;
+  const EditTaskScreen({super.key, required this.id});
+  _loadSingleTask() async {
+    await Get.find<DataController>().getSingleTask(id.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
+    _loadSingleTask();
     var screenHeight = MediaQuery.of(context).size.height;
     // var screenWidth = MediaQuery.of(context).size.width;
     TextEditingController taskNameController = TextEditingController();
     TextEditingController taskDetailsController = TextEditingController();
 
-    bool validation(){
-      if(taskNameController.text.trim().isEmpty){
+    bool validation() {
+      if (taskNameController.text.trim().isEmpty) {
         // Get.snackbar("Task name", "Task name can't be empty");
         Message.taskErrorOrWarning("Task name", "Task name is empty");
         return false;
-      }else if(taskDetailsController.text.trim().isEmpty){
-
+      } else if (taskDetailsController.text.trim().isEmpty) {
         Message.taskErrorOrWarning("Task detail", "Task detail is empty!");
         return false;
       }
@@ -33,7 +35,11 @@ class AddTaskScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      body: GetBuilder<DataController>(builder: (controller){
+      body: GetBuilder<DataController>(builder: (controller) {
+        taskNameController.text =
+            controller.singleData['task_name'] ?? 'Task name do not found';
+        taskDetailsController.text =
+            controller.singleData['task_detail'] ?? 'Task detail not found';
         return Container(
           height: double.infinity,
           width: double.infinity,
@@ -63,7 +69,8 @@ class AddTaskScreen extends StatelessWidget {
               Column(children: [
                 TextFieldWidget(
                   textController: taskNameController,
-                  hintText: "Task name",),
+                  hintText: "Task name",
+                ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -72,19 +79,26 @@ class AddTaskScreen extends StatelessWidget {
                     hintText: "Task details",
                     borderRadius: 15,
                     maxLines: 3),
-                const SizedBox(height: 30,),
+                const SizedBox(
+                  height: 30,
+                ),
                 GestureDetector(
-                    onTap: (){
-                      if(validation()){
-                        Get.lazyPut(()=>DataController());
-                        controller.postData(taskNameController.text.trim(), taskDetailsController.text.trim());
-                        // Get.to(()=>const AllTasksScreen(),transition: Transition.circularReveal);
-                        Get.offNamed(RoutesClass.getAllTaskScreenRoute());
+                    onTap: () {
+                      if (validation()) {
+                        Get.find<DataController>().updateData(
+                            taskNameController.text.trim(),
+                            taskDetailsController.text.trim(),
+                            int.parse(controller.singleData['id']));
+                        Get.to(() => const AllTasksScreen(),
+                            transition: Transition.circularReveal);
                         print("task added successful");
                       }
                       return;
                     },
-                    child: ButtonWidget(backgroundColor: AppColors.mainColor, text: "Add", textColor: Colors.white))
+                    child: ButtonWidget(
+                        backgroundColor: AppColors.mainColor,
+                        text: "Edit",
+                        textColor: Colors.white))
               ]), //text-fields, button
               SizedBox(
                 height: screenHeight / 6,
@@ -92,7 +106,7 @@ class AddTaskScreen extends StatelessWidget {
             ],
           ),
         );
-      },),
+      }),
     );
   }
 }

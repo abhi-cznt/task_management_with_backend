@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_management/controllers/data_controller.dart';
+import 'package:task_management/screens/edit_task_screen.dart';
+import 'package:task_management/screens/view_task_screen.dart';
 import 'package:task_management/utils/app_colors.dart';
 import 'package:task_management/widgets/button_widget.dart';
 import 'package:task_management/widgets/task_widget.dart';
@@ -7,11 +10,15 @@ import 'package:task_management/widgets/task_widget.dart';
 class AllTasksScreen extends StatelessWidget {
   const AllTasksScreen({super.key});
 
+  _loadData() async {
+    await Get.find<DataController>().getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
-    List myData = ['Try harder', 'Try smarter'];
+    // var screenWidth = MediaQuery.of(context).size.width;
+    _loadData();
 
     final leftEditIcon = Container(
       padding: const EdgeInsets.all(20.0),
@@ -36,67 +43,67 @@ class AllTasksScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 60.0, left: 20.0),
-            alignment: Alignment.topLeft,
-            width: double.infinity,
-            height: screenHeight / 3.2,
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage("assets/header1.jpg"),
-            )),
-            child: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.arrow_back,
-                color: AppColors.secondaryColor,
+      body: GetBuilder<DataController>(builder: (controller){
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 60.0, left: 20.0),
+              alignment: Alignment.topLeft,
+              width: double.infinity,
+              height: screenHeight / 3.2,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/header1.jpg"),
+                  )),
+              child: IconButton(
+                onPressed: () {
+                  Get.back();
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: AppColors.secondaryColor,
+                ),
               ),
-            ),
-          ), //header
-          Container(
-            margin: EdgeInsets.only(top: screenHeight / 100),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.home,
-                  color: AppColors.secondaryColor,
-                ), //home
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12.5)),
-                  child: const Icon(Icons.add, color: Colors.white, size: 20.0),
-                ), //add
-                Expanded(child: Container()),
-                Icon(
-                  Icons.calendar_month,
-                  color: AppColors.secondaryColor,
-                ), //calender
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "2",
-                  style:
-                      TextStyle(color: AppColors.secondaryColor, fontSize: 20),
-                ), //no. of tasks
-              ],
-            ),
-          ), //option row
-          Flexible(
-            child: ListView.builder(
-                itemCount: myData.length,
+            ), //header
+            Container(
+              margin: EdgeInsets.only(top: screenHeight / 100),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.home,
+                    color: AppColors.secondaryColor,
+                  ), //home
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(12.5)),
+                    child: const Icon(Icons.add, color: Colors.white, size: 20.0),
+                  ), //add
+                  Expanded(child: Container()),
+                  Icon(
+                    Icons.calendar_month,
+                    color: AppColors.secondaryColor,
+                  ), //calender
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "2",
+                    style:
+                    TextStyle(color: AppColors.secondaryColor, fontSize: 20),
+                  ), //no. of tasks
+                ],
+              ),
+            ), //option row
+            Flexible(child:ListView.builder(
+                itemCount: controller.myData.length,
                 itemBuilder: (context, index) {
                   return Dismissible(
                     background: leftEditIcon,
@@ -110,8 +117,8 @@ class AllTasksScreen extends StatelessWidget {
                           builder: (_) {
                             return Container(
                               decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF2e3253).withOpacity(0.4),
+                                  color: const Color(0xFF2e3253)
+                                      .withOpacity(0.4),
                                   borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(20),
                                       topLeft: Radius.circular(20))),
@@ -119,19 +126,41 @@ class AllTasksScreen extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20.0),
                                 child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
                                     children: [
-                                      ButtonWidget(
-                                          backgroundColor: AppColors.mainColor,
-                                          text: "View",
-                                          textColor: Colors.white),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.off(
+                                                () => ViewTaskScreen(
+                                                id: int.parse(controller
+                                                    .myData[index]['id']
+                                                    .toString())),
+                                          );
+                                        },
+                                        child: ButtonWidget(
+                                            backgroundColor:
+                                            AppColors.mainColor,
+                                            text: "View",
+                                            textColor: Colors.white),
+                                      ),
                                       const SizedBox(
                                         height: 20,
                                       ),
-                                      ButtonWidget(
-                                          backgroundColor: AppColors.mainColor,
-                                          text: "Edit",
-                                          textColor: Colors.white),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.off(EditTaskScreen(
+                                            id: int.parse(controller
+                                                .myData[index]['id']
+                                                .toString()),
+                                          ));
+                                        },
+                                        child: ButtonWidget(
+                                            backgroundColor:
+                                            AppColors.mainColor,
+                                            text: "Edit",
+                                            textColor: Colors.white),
+                                      ),
                                     ]),
                               ),
                             );
@@ -142,6 +171,9 @@ class AllTasksScreen extends StatelessWidget {
                         );
                         return false;
                       } else {
+                        controller.deleteData(
+                            int.parse(controller.myData[index]['id']));
+                        _loadData();
                         return Future.delayed(const Duration(seconds: 1), () {
                           return direction == DismissDirection.endToStart;
                           // return true;
@@ -152,13 +184,16 @@ class AllTasksScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(
                           left: 20, right: 20, bottom: 10),
                       child: TaskWidget(
-                          text: myData[index], textColor: Colors.blueGrey),
+                          text: controller.myData[index]['task_name'],
+                          textColor: Colors.blueGrey),
                     ),
                   );
-                }),
-          )
-        ],
-      ),
+                }) ),
+
+
+          ],
+        );
+      }),
     );
   }
 }
