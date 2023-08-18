@@ -77,9 +77,9 @@ class AddTaskScreen extends StatelessWidget {
                     onTap: (){
                       if(validation()){
                         Get.lazyPut(()=>DataController());
-                        controller.postData(taskNameController.text.trim(), taskDetailsController.text.trim());
+                        Get.find<DataController>().postData(taskNameController.text.trim(), taskDetailsController.text.trim());
                         // Get.to(()=>const AllTasksScreen(),transition: Transition.circularReveal);
-                        Get.offNamed(RoutesClass.getAllTaskScreenRoute());
+                        Get.offAllNamed(RoutesClass.getAllTaskScreenRoute());
                         print("task added successful");
                       }
                       return;

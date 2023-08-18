@@ -19,12 +19,12 @@ class DataController extends GetxController {
     if (response.statusCode == 200) {
       _myData = response.body;
       print("we got the data");
-      update();
     } else {
       print("we didn't got any data");
     }
 
     _isLoading = false;
+    update();
   }
 
   Future<dynamic> getSingleTask(String id) async {
@@ -37,11 +37,11 @@ class DataController extends GetxController {
         _singleData = jsonDecode(response.body);
         print("we got the single data:$_singleData");
       }
-      update();
     } else {
       print("we didn't got the single data");
     }
     _isLoading = false;
+    update();
   }
 
   Future<void> postData(String task, String taskDetail) async {
@@ -49,35 +49,39 @@ class DataController extends GetxController {
     Response response = await service.postData(AppConstants.POST_TASK,
         {'task_name': task, 'task_detail': taskDetail});
     if (response.statusCode == 200) {
-      update();
       print("Data post successful");
     } else {
       print("Data post failed");
     }
     _isLoading = false;
+    update();
   }
 
   Future<void> updateData(String task, String taskDetail, int id)async {
     _isLoading = true;
     Response response = await service.updateData('${AppConstants.UPDATE_TASK}''$id', {'task_name': task, 'task_detail': taskDetail});
     if(response.statusCode == 200){
-      update();
+
       print("Data update successful");
     }else{
       print("Data update failed");
     }
     _isLoading = false;
+    update();
   }
   Future<void> deleteData(int id) async{
     _isLoading = true;
+    update();
     // Response response = await service.deleteData("${AppConstants.DELETE_TASK}"'$id');
     Response response = await service.deleteData(AppConstants.DELETE_TASK+id.toString());
     if(response.statusCode == 200){
-      update();
       print("Data deleted");
     }else{
       print("Data delete failed");
     }
-    _isLoading = false;
+   await Future.delayed(const Duration(seconds: 1),(){
+      _isLoading = false;
+      update();
+    });
   }
 }

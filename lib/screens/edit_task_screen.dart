@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_management/controllers/data_controller.dart';
-import 'package:task_management/screens/all_tasks_screen.dart';
 import 'package:task_management/utils/app_colors.dart';
 import 'package:task_management/widgets/button_widget.dart';
 import 'package:task_management/widgets/error_warning_ms.dart';
@@ -89,8 +88,8 @@ class EditTaskScreen extends StatelessWidget {
                             taskNameController.text.trim(),
                             taskDetailsController.text.trim(),
                             int.parse(controller.singleData['id']));
-                        Get.to(() => const AllTasksScreen(),
-                            transition: Transition.circularReveal);
+                        // Get.offNamed(RoutesClass.getAllTaskScreenRoute());
+                        Get.back();
                         print("task added successful");
                       }
                       return;
